@@ -12,6 +12,9 @@ let currentReviewTimes = 1
 let selectedFlashCard
 let flashCards = []
 
+
+
+
 // Functions
 
 function initialize() {
