@@ -3,11 +3,6 @@
   "libs": [
     "browser"
   ],
-  "loadEagerly": [
-    "test.html",
-    "test.js",
-    "test9.html"
-  ],
   "plugins": {
     "es_modules": {},
     "node": {},
