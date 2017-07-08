@@ -32,10 +32,7 @@ function initialize() {
   decreaseSpanNextButton.addEventListener('click', onDecreaseSpanNextButtonClick)
   remainSpanNextButton.addEventListener('click', onRemainSpanNextButtonClick)
   increaseSpanNextButton.addEventListener('click', onIncreaseSpanNextButtonClick)
-  for (let i = 1; i <= 10000; i++) {
-    let flashCard = new FlashCard(i.toString(), i)
-    flashCards.push(flashCard)
-  }
+  flashCards.push(FlashCardFactory.newInstance('1', 1))
   selectFlashCard(flashCards[0])
 }
 
@@ -43,29 +40,25 @@ function selectNextFlashCard() {
   selectedFlashCard.lastReview = currentReviewTimes
   currentReviewTimes++
   flashCards.sort((a, b) => {
-    let returnValue = getPriority(b, currentReviewTimes) - getPriority(a, currentReviewTimes)
-    if (Math.abs(returnValue) <= 0.0001) {
+    let returnValue = b.priority(currentReviewTimes) - a.priority(currentReviewTimes)
+    if (Math.abs(returnValue) <= 0.00001) {
       if (a.id < b.id) {
-        returnValue = -1
+        returnValue = -0.00001
       } else {
-        returnValue = 1
+        returnValue = 0.00001
       }
     }
     return returnValue
   })
+  if (flashCards[0].priority(currentReviewTimes) < 1) {
+    flashCards.unshift(FlashCardFactory.newInstance((flashCards.length + 1).toString(), flashCards.length + 1))
+  }
   selectFlashCard(flashCards[0])
 }
 
 function selectFlashCard(flashCard) {
   selectedFlashCard = flashCard
   contentDiv.innerHTML = flashCard.content
-}
-
-function getPriority(flashCard, reviewTimes) {
-  if (flashCard.lastReview == 0) {
-    return 1
-  }
-  return (reviewTimes - flashCard.lastReview) / flashCard.reviewSpan
 }
 
 // Event Handlers
@@ -79,25 +72,36 @@ function onChangeFlashCardsSizeButtonClick(event) {
   flashCards.sort((a, b) => a.id - b.id)
   if (size > flashCards.length) {
     for (let i = flashCards.length + 1; i <= size; i++) {
-      flashCards.push(new FlashCard(i.toString(), i))
+      flashCards.push(FlashCardFactory.newInstance(i.toString(), i))
     }
   } else {
-    if(selectedFlashCard.id > size) {
-      selectFlashCard(flashCards[0])
-    }
     flashCards.length = size
+    if (selectedFlashCard.id > size) {
+      selectNextFlashCard()
+    }
   }
 }
 
 function onImportButtonClick(event) {
-  flashCards = JSON.parse(importExportTextarea.value)
-  selectFlashCard(flashCards[0])
+  importObject = JSON.parse(importExportTextarea.value)
+  flashCards = [];
+  for (let i = 0, length = importObject.flashCards.length; i < length; i++) {
+    flashCards.push(FlashCardFactory.newInstance(...importObject.flashCardsProperties[i]))
+  }
+  selectFlashCard(flashCards.find(flashCard => flashCard.id === importObject.selectedFlashCardId))
   alert('匯入完成')
 }
 
 function onExportButtonClick(event) {
+  let exportObject = {
+    flashCardsProperties: [],
+    selectedFlashCardId: selectedFlashCard.id
+  }
   flashCards.sort((a, b) => a.id - b.id)
-  importExportTextarea.value = JSON.stringify(flashCards)
+  for (let i = 0, length = flashCards.length; i < length; i++) {
+    exportObject.flashCardsProperties.push([flashCards[i].content, flashCards[i].id, flashCards[i].reviewSpan, flashCards[i].lastReview])
+  }
+  importExportTextarea.value = JSON.stringify(exportObject)
   alert('匯出完成')
 }
 
@@ -108,7 +112,7 @@ function onContentDivInput(event) {
 function onCustomSpanNextButtonClick(event) {
   let value = window.prompt('請輸入間隔(0~)', selectedFlashCard.reviewSpan)
   if (value >= 1 && value < Infinity) {
-    selectedFlashCard.reviewSpan = parseFloat(value).toPrecision(7)
+    selectedFlashCard.reviewSpan = parseFloat(value).toPrecision(6)
     selectNextFlashCard()
   } else {
     alert('輸入範圍錯誤')
@@ -116,7 +120,7 @@ function onCustomSpanNextButtonClick(event) {
 }
 
 function onDecreaseSpanNextButtonClick(event) {
-  selectedFlashCard.reviewSpan = Math.max(1, selectedFlashCard.reviewSpan / 2).toPrecision(7)
+  selectedFlashCard.reviewSpan = Math.max(1, selectedFlashCard.reviewSpan / 2).toFixed(1)
   selectNextFlashCard()
 }
 
@@ -125,19 +129,39 @@ function onRemainSpanNextButtonClick(event) {
 }
 
 function onIncreaseSpanNextButtonClick(event) {
-  selectedFlashCard.reviewSpan *= Math.max(3.4 - selectedFlashCard.reviewSpan ** 0.08, 1.2)
-  selectedFlashCard.reviewSpan = selectedFlashCard.reviewSpan.toPrecision(7)
+  selectedFlashCard.reviewSpan *= Math.max(3.95 - selectedFlashCard.reviewSpan ** 0.08, 1.2)
+  selectedFlashCard.reviewSpan = selectedFlashCard.reviewSpan.toFixed(1)
   selectNextFlashCard()
 }
 
 // Factories
 
+class FlashCardFactory {
+  static newInstance(content, id, reviewSpan = 1, lastReview = 0) {
+    let flashCard = new FlashCard()
+    flashCard.content = content
+    flashCard.id = id
+    flashCard.reviewSpan = reviewSpan
+    flashCard.lastReview = lastReview
+    return flashCard
+  }
+}
+
+// Classes
+
 class FlashCard {
-  constructor(content, id, reviewSpan = 1, lastReview = 0) {
-    this.content = content
-    this.reviewSpan = reviewSpan
-    this.lastReview = lastReview
-    this.id = id
+  constructor() {
+    this.content = ''
+    this.id = 0
+    this.reviewSpan = 0
+    this.lastReview = 0
+  }
+
+  priority(reviewTimes) {
+    if (this.lastReview === 0) {
+      return 1
+    }
+    return (reviewTimes - this.lastReview) / this.reviewSpan
   }
 }
 
