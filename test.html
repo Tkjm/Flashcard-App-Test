@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Reviewer</title>
+  <title>FlashCard Test</title>
   <style>
     * {
       margin: 0px;
@@ -40,8 +40,13 @@
       min-height: 200px;
       max-width: 800px;
       padding: var(--mainDivPadding);
-      background-color: hsla(0, 0%, 82%, 1.0);
+      background-color: hsla(0, 0%, 70%, 1.0);
       box-shadow: 0px 0px 10px;
+    }
+
+    .statusDiv {
+      flex: 0 22px;
+      background-color: hsla(0, 0%, 94%, 1.0);
     }
 
     .contentDiv {
@@ -71,6 +76,9 @@
       <button class="importButton">匯入</button>
       <button class="exportButton">匯出</button>
       <textarea class="importExportTextarea"></textarea>
+    </div>
+    <div class="statusDiv">
+
     </div>
     <div class="contentDiv" contenteditable="true">
     </div>
