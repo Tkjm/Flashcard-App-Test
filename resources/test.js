@@ -16,6 +16,12 @@ let flashCards = []
 // Functions
 
 function initialize() {
+  initDOM()
+  flashCards.push(FlashCardFactory.createFlashCard('1', 1))
+  selectFlashCard(flashCards[0])
+}
+
+function initDOM() {
   changeFlashCardsSizeButton = document.querySelector('.changeFlashCardsSizeButton')
   importButton = document.querySelector('.importButton')
   exportButton = document.querySelector('.exportButton')
@@ -34,8 +40,6 @@ function initialize() {
   decreaseSpanNextButton.addEventListener('click', onDecreaseSpanNextButtonClick)
   remainSpanNextButton.addEventListener('click', onRemainSpanNextButtonClick)
   increaseSpanNextButton.addEventListener('click', onIncreaseSpanNextButtonClick)
-  flashCards.push(FlashCardFactory.createFlashCard('1', 1))
-  selectFlashCard(flashCards[0])
 }
 
 function selectNextFlashCard() {
@@ -144,7 +148,7 @@ function onIncreaseSpanNextButtonClick(event) {
 // Factories
 
 class FlashCardFactory {
-  static createFlashCard(content, id, retreiveSpan = 1, lastRetreiveStudyTime = 0, retreivedTimes = 0) {
+  static createFlashCard(content, id, retreiveSpan = FlashCardFactory.defaultRetreiveSpan, lastRetreiveStudyTime = 0, retreivedTimes = 0) {
     let flashCard = new FlashCard()
     flashCard.content = content
     flashCard.id = id
@@ -152,6 +156,10 @@ class FlashCardFactory {
     flashCard.lastRetreiveStudyTime = lastRetreiveStudyTime
     flashCard.retreivedTimes = retreivedTimes
     return flashCard
+  }
+
+  static get defaultRetreiveSpan() {
+    return 1.5
   }
 }
 
@@ -178,7 +186,7 @@ class FlashCard {
   }
 
   increasedRetreiveSpan() {
-    return Number.parseFloat((this.retreiveSpan * Math.max(3.95 - this.retreiveSpan ** 0.08, 1.2)).toFixed(1))
+    return Number.parseFloat((this.retreiveSpan * Math.max(4.5 - this.retreiveSpan ** 0.08, 1.25)).toFixed(1))
   }
 
 }

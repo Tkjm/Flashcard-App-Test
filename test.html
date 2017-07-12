@@ -3,69 +3,7 @@
 
 <head>
   <title>FlashCard Test</title>
-  <style>
-    * {
-      margin: 0px;
-    }
-
-     :root {
-      --mainDivPadding: 5px;
-    }
-
-    html,
-    body,
-    .mainDiv,
-    .importExportDiv,
-    .progressDiv {
-      display: flex;
-      align-items: stretch;
-    }
-
-    html {
-      justify-content: center;
-      height: 100%;
-    }
-
-    body {
-      flex: 1 100%;
-      background-color: hsla(0, 0%, 80%, 1.0);
-    }
-
-    .mainDiv {
-      margin-left: auto;
-      margin-right: auto;
-      flex: 1;
-      flex-direction: column;
-      position: relative;
-      min-height: 200px;
-      max-width: 800px;
-      padding: var(--mainDivPadding);
-      background-color: hsla(0, 0%, 70%, 1.0);
-      box-shadow: 0px 0px 10px;
-    }
-
-    .statusDiv {
-      flex: 0 22px;
-      background-color: hsla(0, 0%, 94%, 1.0);
-    }
-
-    .contentDiv {
-      flex: 1 0;
-      width: 100%;
-      background-color: hsla(0, 0%, 100%, 1.0);
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-
-    .recommended {
-      background-color: hsla(240, 80%, 80%, 1.0);
-    }
-
-    .importExportDiv textarea,
-    .progressDiv button {
-      flex: 1;
-    }
-  </style>
+  <link href="resources/test.css" rel="stylesheet" />
   <script src="resources/test.js"></script>
 </head>
 
